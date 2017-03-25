@@ -90,7 +90,13 @@ app.use(function (err, req, res, next) {
   });
 });
 
-// 监听端口，启动程序
-app.listen(config.port, function () {
-  console.log(`${pkg.name} listening on port ${config.port}`);
-});
+// 直接启动 app.js 则会监听端口启动程序，如果 app.js 被 require 了，则导出 app
+//
+if (module.parent) {
+    module.exports = app;
+} else {
+  // 监听端口，启动程序
+  app.listen(config.port, function () {
+    console.log(`${pkg.name} listening on port ${config.port}`);
+  });
+}
