@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "test": "node --harmony ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --recursive",
-    "start": "NODE_ENV=production ./node_modules/.bin/pm2 start app.js --node-args='--harmony' --name 'myblog'"
+    "server": "NODE_ENV=production ./node_modules/.bin/pm2 start app.js --node-args='--harmony' --name 'myblog'",
+    "start": "NODE_ENV=default node --harmony app.js"
   },
   "repository": {
     "type": "git",
