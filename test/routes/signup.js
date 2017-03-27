@@ -4,16 +4,16 @@ import request from 'supertest';
 import app from '../../src/app';
 import { User } from '../../src/lib/mongo'
 
-var testName1 = 'testName1';
-var testName2 = 'testName2';
+const TEST_NAME_1 = 'testName1';
+const TEST_NAME_2 = 'testName2';
 
 describe('signup', () => {
   describe('POST /signup', () => {
-    var agent = request.agent(app);//persist cookie when redirect
+    let agent = request.agent(app);//persist cookie when redirect
     beforeEach((done) => {
       // 创建一个用户
       User.create({
-        name: testName1,
+        name: TEST_NAME_1,
         password: '123456',
         avatar: '',
         gender: 'x',
@@ -28,7 +28,7 @@ describe('signup', () => {
 
     afterEach((done) => {
       // 删除测试用户
-      User.remove({ name: { $in: [testName1, testName2] } })
+      User.remove({ name: { $in: [TEST_NAME_1, TEST_NAME_2] } })
         .exec()
         .then(() => {
           done();
@@ -57,7 +57,7 @@ describe('signup', () => {
         .post('/signup')
         .type('form')
         .attach('avatar', path.join(__dirname, 'testAvatar.jpg'))
-        .field({ name: testName2, gender: 'a' })
+        .field({ name: TEST_NAME_2, gender: 'a' })
         .redirects()
         .end((err, res) => {
           if (err) return done(err);
@@ -72,7 +72,7 @@ describe('signup', () => {
         .post('/signup')
         .type('form')
         .attach('avatar', path.join(__dirname, 'testAvatar.jpg'))
-        .field({ name: testName1, gender: 'm', bio: 'noder', password: '123456', repassword: '123456' })
+        .field({ name: TEST_NAME_1, gender: 'm', bio: 'noder', password: '123456', repassword: '123456' })
         .redirects()
         .end((err, res) => {
           if (err) return done(err);
@@ -87,7 +87,7 @@ describe('signup', () => {
         .post('/signup')
         .type('form')
         .attach('avatar', path.join(__dirname, 'testAvatar.jpg'))
-        .field({ name: testName2, gender: 'm', bio: 'noder', password: '123456', repassword: '123456' })
+        .field({ name: TEST_NAME_2, gender: 'm', bio: 'noder', password: '123456', repassword: '123456' })
         .redirects()
         .end((err, res) => {
           if (err) return done(err);
