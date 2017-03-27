@@ -19,6 +19,11 @@
   },
   "homepage": "https://github.com/frankZheng1111/node-blog#readme",
   "dependencies": {
+    "babel-cli": "^6.24.0",
+    "babel-preset-es2015": "^6.24.0",
+    "babel-preset-stage-2": "^6.22.0",
+    "babel-register": "^6.24.0",
+    "nodemon": "^1.11.0",
     "config-lite": "^1.5.0",
     "connect-flash": "^0.1.1",
     "connect-mongo": "^1.3.2",
