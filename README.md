@@ -21,7 +21,7 @@
   ```
 3. 访问[localhost:3000](http://localhost:3000)
 
-## 用到的一些库
+## 部分库的说明
 
 1. config-lite: 是一个轻量的读取配置文件的模块。
 4. [express-session](https://github.com/expressjs/session):  session 中间件
