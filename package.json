@@ -2,11 +2,12 @@
   "name": "node-blog",
   "version": "1.0.0",
   "description": "for practise node express",
-  "main": "build/app.js",
+  "main": "src/app.js",
   "scripts": {
     "test": "node --harmony ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --recursive",
-    "server": "NODE_ENV=production ./node_modules/.bin/pm2 start app.js --node-args='--harmony' --name 'myblog'",
-    "start": "NODE_ENV=default node --harmony src/app.js"
+    "server": "NODE_ENV=production ./node_modules/.bin/pm2 start build/app.js --name 'myblog'",
+    "start": "NODE_ENV=default node --harmony src/app.js",
+    "build": "babel src -d build"
   },
   "repository": {
     "type": "git",
