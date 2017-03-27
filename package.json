@@ -4,9 +4,9 @@
   "description": "for practise node express",
   "main": "src/app.js",
   "scripts": {
-    "test": "node --harmony ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --recursive",
+    "test": "node --harmony ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --compilers js:babel-register --recursive",
     "server": "NODE_ENV=production ./node_modules/.bin/pm2 start build/app.js --name 'myblog'",
-    "start": "NODE_ENV=default node --harmony src/app.js",
+    "start": "nodemon src/app.js --exec babel-node",
     "build": "babel src -d build"
   },
   "repository": {
@@ -45,5 +45,12 @@
   },
   "devDependencies": {
     "istanbul": "^0.4.5"
+  },
+  "babel": {
+    "presets": [
+      "es2015",
+      "stage-2"
+    ],
+    "plugins": []
   }
 }

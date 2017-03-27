@@ -1,15 +1,16 @@
-var path = require('path');
-var express = require('express');
-var session = require('express-session');
-var MongoStore = require('connect-mongo')(session);
-var flash = require('connect-flash');
-var config = require('config-lite');
-var routes = require('./routes');
-var pkg = require('../package');
-var winston = require('winston');
-var expressWinston = require('express-winston');
+import path from 'path';
+import express from 'express';
+import session from 'express-session';
+import _connectMongo from 'connect-mongo';
+import flash from 'connect-flash';
+import config from 'config-lite';
+import routes from './routes';
+import pkg from '../package';
+import winston from 'winston'
+import expressWinston from 'express-winston'
 
-var app = express();
+let MongoStore = _connectMongo(session)
+let app = express();
 
 // 设置模板目录
 app.set('views', path.join(__dirname, '../views'));
@@ -47,7 +48,7 @@ app.locals.blog = {
 };
 
 // 添加模板必需的三个变量
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
   res.locals.user = req.session.user;
   res.locals.success = req.flash('success').toString();
   res.locals.error = req.flash('error').toString();
@@ -84,7 +85,7 @@ app.use(expressWinston.errorLogger({
 }));
 
 // error page
-app.use(function (err, req, res, next) {
+app.use((err, req, res, next) => {
   res.render('error', {
     error: err
   });
@@ -92,11 +93,9 @@ app.use(function (err, req, res, next) {
 
 // 直接启动 app.js 则会监听端口启动程序，如果 app.js 被 require 了，则导出 app
 //
-if (module.parent) {
-    module.exports = app;
-} else {
-  // 监听端口，启动程序
-  app.listen(config.port, function () {
+if (!module.parent) {
+  app.listen(config.port, () => {
     console.log(`${pkg.name} listening on port ${config.port}`);
   });
 }
+module.exports=app;

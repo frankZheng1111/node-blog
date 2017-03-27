@@ -1,15 +1,16 @@
-var path = require('path');
-var assert = require('assert');
-var request = require('supertest');
-var app = require('../../app');
-var User = require('../../lib/mongo').User;
+import path from 'path';
+import assert from 'assert';
+import request from 'supertest';
+import app from '../../src/app';
+import { User } from '../../src/lib/mongo'
 
 var testName1 = 'testName1';
-var testName2 = 'nswbmw';
-describe('signup', function() {
-  describe('POST /signup', function() {
+var testName2 = 'testName2';
+
+describe('signup', () => {
+  describe('POST /signup', () => {
     var agent = request.agent(app);//persist cookie when redirect
-    beforeEach(function (done) {
+    beforeEach((done) => {
       // 创建一个用户
       User.create({
         name: testName1,
@@ -19,31 +20,31 @@ describe('signup', function() {
         bio: ''
       })
       .exec()
-        .then(function () {
+        .then(() => {
           done();
         })
       .catch(done);
     });
 
-    afterEach(function (done) {
+    afterEach((done) => {
       // 删除测试用户
       User.remove({ name: { $in: [testName1, testName2] } })
         .exec()
-        .then(function () {
+        .then(() => {
           done();
         })
       .catch(done);
     });
 
     // 名户名错误的情况
-    it('wrong name', function(done) {
+    it('wrong name', (done) => {
       agent
         .post('/signup')
         .type('form')
         .attach('avatar', path.join(__dirname, 'testAvatar.jpg'))
         .field({ name: '' })
         .redirects()
-        .end(function(err, res) {
+        .end((err, res) => {
           if (err) return done(err);
           assert(res.text.match(/名字请限制在 1-10 个字符/));
           done();
@@ -51,14 +52,14 @@ describe('signup', function() {
     });
 
     // 性别错误的情况
-    it('wrong gender', function(done) {
+    it('wrong gender', (done) => {
       agent
         .post('/signup')
         .type('form')
         .attach('avatar', path.join(__dirname, 'testAvatar.jpg'))
         .field({ name: testName2, gender: 'a' })
         .redirects()
-        .end(function(err, res) {
+        .end((err, res) => {
           if (err) return done(err);
           assert(res.text.match(/性别只能是 m、f 或 x/));
           done();
@@ -66,14 +67,14 @@ describe('signup', function() {
     });
     // 其余的参数测试自行补充
     // 用户名被占用的情况
-    it('duplicate name', function(done) {
+    it('duplicate name', (done) => {
       agent
         .post('/signup')
         .type('form')
         .attach('avatar', path.join(__dirname, 'testAvatar.jpg'))
         .field({ name: testName1, gender: 'm', bio: 'noder', password: '123456', repassword: '123456' })
         .redirects()
-        .end(function(err, res) {
+        .end((err, res) => {
           if (err) return done(err);
           assert(res.text.match(/用户名已被占用/));
           done();
@@ -81,14 +82,14 @@ describe('signup', function() {
     });
 
     // 注册成功的情况
-    it('success', function(done) {
+    it('success', (done) => {
       agent
         .post('/signup')
         .type('form')
         .attach('avatar', path.join(__dirname, 'testAvatar.jpg'))
         .field({ name: testName2, gender: 'm', bio: 'noder', password: '123456', repassword: '123456' })
         .redirects()
-        .end(function(err, res) {
+        .end((err, res) => {
           if (err) return done(err);
           assert(res.text.match(/注册成功/));
           done();
