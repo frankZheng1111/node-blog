@@ -1,9 +1,10 @@
+import signin from './signin';
 module.exports = function (app) {
   app.get('/', function (req, res) {
     res.redirect('/posts');
   });
   app.use('/signup', require('./signup'));
-  app.use('/signin', require('./signin'));
+  app.use('/signin', signin);
   app.use('/signout', require('./signout'));
   app.use('/posts', require('./posts'));
   // 404 page

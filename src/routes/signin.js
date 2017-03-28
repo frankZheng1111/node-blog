@@ -1,22 +1,22 @@
-var sha1 = require('sha1');
-var express = require('express');
-var router = express.Router();
+import sha1 from 'sha1';
+import express from 'express';
+import User from '../models/users';
+import { checkNotLogin } from '../middlewares/check';
 
-var UserModel = require('../models/users');
-var checkNotLogin = require('../middlewares/check').checkNotLogin;
+let router = express.Router();
 
 // GET /signin 登录页
-router.get('/', checkNotLogin, function(req, res, next) {
+router.get('/', checkNotLogin, (req, res, next) => {
   res.render('signin');
 });
 
 // POST /signin 用户登录
-router.post('/', checkNotLogin, function(req, res, next) {
-  var name = req.fields.name;
-  var password = req.fields.password;
+router.post('/', checkNotLogin, (req, res, next) => {
+  let name = req.fields.name;
+  let password = req.fields.password;
 
-  UserModel.getUserByName(name)
-    .then(function (user) {
+  User.findByName(name)
+    .then((user) => {
       console.log(user)
       if (!user) {
         req.flash('error', '用户不存在');
@@ -37,4 +37,5 @@ router.post('/', checkNotLogin, function(req, res, next) {
   .catch(next);
 });
 
-module.exports = router;
+export default router;
+
