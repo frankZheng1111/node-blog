@@ -9,3 +9,6 @@ node_modules
 # 上传的头像
 /public/img/upload_*
 !/public/img/.keep
+
+# 产品环境配置
+config/production.json
