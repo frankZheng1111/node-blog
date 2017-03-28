@@ -1,6 +1,7 @@
 'use strict'
 import config from 'config-lite'
 import mongoose from 'mongoose'
+import moment from 'moment'
 
 mongoose.connect(config.mongodb);
 
@@ -34,7 +35,7 @@ userSchema.index({ name: 1 }, { unique: true });
 
 export let postSchema = mongoose.Schema({
   author: {
-    type: Objectid,
+    type: mongoose.Schema.Types.ObjectId,
     required: true
   },
   title: {
@@ -47,21 +48,38 @@ export let postSchema = mongoose.Schema({
   },
   pv: {
     type: Number
-  } // 被浏览次数
+  }, // 被浏览次数
+  createdAt: { type : Date, default : Date.now }
 });
-postSchema.index({ author: 1, _id: -1 }).exec();// 按创建时间降序查看用户的文章列表
+postSchema.index({ author: 1, _id: -1 });// 按创建时间降序查看用户的文章列表
 
 export let commentSchema = mongoose.Schema({
   author: {
-    type: Objectid
+    type: mongoose.Schema.Types.ObjectId
   },
   content: {
-    type: String
+    type: String,
+    required: [true, '请填写内容']
   },
   postId: {
-    type: Objectid
-  }
+    type: mongoose.Schema.Types.ObjectId
+  },
+  createdAt: { type : Date, default : Date.now }
 });
-commentSchema.index({ postId: 1, _id: 1 }).exec();// 通过文章 id 获取该文章下所有留言，按留言创建时间升序
-commentSchema.index({ author: 1, _id: 1 }).exec();// 通过用户 id 和留言 id 删除一个留言
+commentSchema.index({ postId: 1, _id: 1 });// 通过文章 id 获取该文章下所有留言，按留言创建时间升序
+commentSchema.index({ author: 1, _id: 1 });// 通过用户 id 和留言 id 删除一个留言
 
+function strfCreatedAt (schema) {
+  schema.add({ strfCreatedAt: String })
+  schema.post('findOne', (item) => {
+    item.strfCreatedAt = moment(item.createdAt).format('YYYY-MM-DD HH:mm');
+    return item;
+  });
+  schema.post('find', (items) => {
+    return items.map((item) => {
+      item.strfCreatedAt = moment(item.createdAt).format('YYYY-MM-DD HH:mm');
+      return item;
+    });
+  });
+}
+mongoose.plugin(strfCreatedAt);

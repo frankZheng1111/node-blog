@@ -1,6 +1,6 @@
 'use strict'
-import { userSchema as User } from '../lib/mongooseSchema'
-import mongoose from 'mongoose'
+import { userSchema as User } from '../lib/mongooseSchema';
+import mongoose from 'mongoose';
 
 User.statics = {
   // 注册一个用户

@@ -1,17 +1,17 @@
-var express = require('express');
-var router = express.Router();
+'use strict'
+import express from 'express';
+import { checkLogin } from '../middlewares/check';
+import Post from '../models/posts';
+import Comment from '../models/comments';
 
-var checkLogin = require('../middlewares/check').checkLogin;
-
-var PostModel = require('../models/posts');
-var CommentModel = require('../models/comments');
+let router = express.Router();
 
 // GET /posts 所有用户或者特定用户的文章页
 //   eg: GET /posts?author=xxx
-router.get('/', function(req, res, next) {
-  var author = req.query.author;
-  PostModel.getPosts(author)
-    .then(function (posts) {
+router.get('/', (req, res, next) => {
+  let author = req.query.author;
+  Post.findAllByAuthor(author)
+    .then((posts) => {
       res.render('posts', {
         posts: posts
       });
@@ -20,10 +20,10 @@ router.get('/', function(req, res, next) {
 });
 
 // POST /posts 发表一篇文章
-router.post('/', checkLogin, function(req, res, next) {
-  var author = req.session.user._id;
-  var title = req.fields.title;
-  var content = req.fields.content;
+router.post('/', checkLogin, (req, res, next) => {
+  let author = req.session.user._id;
+  let title = req.fields.title;
+  let content = req.fields.content;
 
   // 校验参数
   try {
@@ -38,17 +38,16 @@ router.post('/', checkLogin, function(req, res, next) {
     return res.redirect('back');
   }
 
-  var post = {
+  let post = {
     author: author,
     title: title,
     content: content,
     pv: 0
   };
 
-  PostModel.create(post)
-    .then(function (result) {
+  Post.createNewPost(post)
+    .then((post) => {
       // 此 post 是插入 mongodb 后的值，包含 _id
-      post = result.ops[0];
       req.flash('success', '发表成功');
       // 发表成功后跳转到该文章页
       res.redirect(`/posts/${post._id}`);
@@ -57,29 +56,29 @@ router.post('/', checkLogin, function(req, res, next) {
 });
 
 // GET /posts/create 发表文章页
-router.get('/create', checkLogin, function(req, res, next) {
+router.get('/create', checkLogin, (req, res, next) => {
   res.render('create');
 });
 
 // GET /posts/:postId 单独一篇的文章页
 //
-router.get('/:postId', function(req, res, next) {
+router.get('/:postId', (req, res, next) => {
   var postId = req.params.postId;
 
   Promise.all([
-      PostModel.getPostById(postId),// 获取文章信息
-      CommentModel.getComments(postId),// 获取该文章所有留言
-      PostModel.incPv(postId)// pv 加 1
+      Post.findById(postId),// 获取文章信息
+      Comment.getByPostId(postId),// 获取该文章所有留言
+      Post.incPv(postId)// pv 加 1
   ])
     .then(function (result) {
-      var post = result[0];
-      var comments = result[1];
+      let post = result[0];
+      let comments = result[1];
       if (!post) {
         throw new Error('该文章不存在');
       }
 
       res.render('post', {
-        post: post,
+        post: post.contentToHtml(),
         comments: comments
       });
     })
@@ -87,12 +86,12 @@ router.get('/:postId', function(req, res, next) {
 });
 
 // GET /posts/:postId/edit 更新文章页
-router.get('/:postId/edit', checkLogin, function(req, res, next) {
-  var postId = req.params.postId;
-  var author = req.session.user._id;
+router.get('/:postId/edit', checkLogin, (req, res, next) => {
+  let postId = req.params.postId;
+  let author = req.session.user._id;
 
-  PostModel.getRawPostById(postId)
-    .then(function (post) {
+  Post.findRawPostById(postId)
+    .then((post) => {
       if (!post) {
         throw new Error('该文章不存在');
       }
@@ -107,14 +106,14 @@ router.get('/:postId/edit', checkLogin, function(req, res, next) {
 });
 
 // POST /posts/:postId/edit 更新一篇文章
-router.post('/:postId/edit', checkLogin, function(req, res, next) {
-  var postId = req.params.postId;
-  var author = req.session.user._id;
-  var title = req.fields.title;
-  var content = req.fields.content;
+router.post('/:postId/edit', checkLogin, (req, res, next) => {
+  let postId = req.params.postId;
+  let author = req.session.user._id;
+  let title = req.fields.title;
+  let content = req.fields.content;
 
-  PostModel.updatePostById(postId, author, { title: title, content: content })
-    .then(function () {
+  Post.updateById(postId, author, { title: title, content: content })
+    .then(() => {
       req.flash('success', '编辑文章成功');
       // 编辑成功后跳转到上一页
       res.redirect(`/posts/${postId}`);
@@ -123,11 +122,11 @@ router.post('/:postId/edit', checkLogin, function(req, res, next) {
 });
 
 // GET /posts/:postId/remove 删除一篇文章
-router.get('/:postId/remove', checkLogin, function(req, res, next) {
-  var postId = req.params.postId;
-  var author = req.session.user._id;
+router.get('/:postId/remove', checkLogin, (req, res, next) => {
+  let postId = req.params.postId;
+  let author = req.session.user._id;
 
-  PostModel.delPostById(postId, author)
+  Post.delById(postId, author)
     .then(function () {
       req.flash('success', '删除文章成功');
       // 删除成功后跳转到主页
@@ -147,7 +146,7 @@ router.post('/:postId/comment', checkLogin, function(req, res, next) {
     content: content
   };
 
-  CommentModel.create(comment)
+  Comment.createNewComment(comment)
     .then(function () {
       req.flash('success', '留言成功');
       // 留言成功后跳转到上一页
@@ -161,7 +160,7 @@ router.get('/:postId/comment/:commentId/remove', checkLogin, function(req, res, 
   var commentId = req.params.commentId;
   var author = req.session.user._id;
 
-  CommentModel.delCommentById(commentId, author)
+  Comment.delById(commentId, author)
     .then(function () {
       req.flash('success', '删除留言成功');
       // 删除成功后跳转到上一页
@@ -170,4 +169,4 @@ router.get('/:postId/comment/:commentId/remove', checkLogin, function(req, res, 
   .catch(next);
 });
 
-module.exports = router;
+export default router;

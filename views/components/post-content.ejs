@@ -14,7 +14,7 @@
         <h3><a href="/posts/<%= post._id %>"><%= post.title %></a></h3>
         <pre><%- post.content %></pre>
         <div>
-          <span class="tag"><%= post.created_at %></span>
+          <span class="tag"><%= post.strfCreatedAt %></span>
           <span class="tag right">
             <span>浏览(<%= post.pv %>)</span>
             <span>留言(<%= post.commentsCount %>)</span>
