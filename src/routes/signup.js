@@ -1,26 +1,26 @@
-var fs = require('fs');
-var path = require('path');
-var sha1 = require('sha1');
-var express = require('express');
-var router = express.Router();
-
+'use strict'
+import fs from 'fs';
+import path from 'path';
+import sha1 from 'sha1';
+import express from 'express';
 import User from '../models/users';
-// var UserModel = require('../models/users');
-var checkNotLogin = require('../middlewares/check').checkNotLogin;
+import { checkNotLogin } from '../middlewares/check';
+
+let router = express.Router();
 
 // GET /signup 注册页
-router.get('/', checkNotLogin, function(req, res, next) {
+router.get('/', checkNotLogin, (req, res, next) => {
   res.render('signup');
 });
 
 // POST /signup 用户注册
-router.post('/', checkNotLogin, function(req, res, next) {
-  var name = req.fields.name;
-  var gender = req.fields.gender;
-  var bio = req.fields.bio;
-  var avatar = req.files.avatar.path.split(path.sep).pop();
-  var password = req.fields.password;
-  var repassword = req.fields.repassword;
+router.post('/', checkNotLogin, (req, res, next) => {
+  let name = req.fields.name;
+  let gender = req.fields.gender;
+  let bio = req.fields.bio;
+  let avatar = req.files.avatar.path.split(path.sep).pop();
+  let password = req.fields.password;
+  let repassword = req.fields.repassword;
 
   // 校验参数
   try {
@@ -44,7 +44,7 @@ router.post('/', checkNotLogin, function(req, res, next) {
   password = sha1(password);
 
   // 待写入数据库的用户信息
-  var user = {
+  let user = {
     name: name,
     password: password,
     gender: gender,
@@ -53,7 +53,7 @@ router.post('/', checkNotLogin, function(req, res, next) {
   };
   // 用户信息写入数据库
   User.createNewUser(user)
-    .then(function (user) {
+    .then((user) => {
       // 将用户信息存入 session
       delete user.password;
       req.session.user = user;
@@ -62,7 +62,7 @@ router.post('/', checkNotLogin, function(req, res, next) {
       // 跳转到首页
       res.redirect('/posts');
     })
-  .catch(function (e) {
+  .catch((e) => {
     // 注册失败，异步删除上传的头像
     fs.unlink(req.files.avatar.path);
     // 用户名被占用则跳回注册页，而不是错误页
@@ -79,4 +79,4 @@ router.post('/', checkNotLogin, function(req, res, next) {
   });
 });
 
-module.exports = router;
+export default router;

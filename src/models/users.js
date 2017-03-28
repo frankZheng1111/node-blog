@@ -17,7 +17,6 @@ User.statics = {
       .exec();
   }
 }
-User.index({ name: 1 });
 
 export default mongoose.model('User', User);
 

@@ -51,7 +51,7 @@ module.exports = {
     return Post
       .findOne({ _id: postId })
       .populate({ path: 'author', model: 'User' })
-      .addCreatedAt()
+      // .addCreatedAt()
       .addCommentsCount()
       .contentToHtml()
       .exec();
@@ -67,7 +67,7 @@ module.exports = {
       .find(query)
       .populate({ path: 'author', model: 'User' })
       .sort({ _id: -1 })
-      .addCreatedAt()
+      // .addCreatedAt()
       .addCommentsCount()
       .contentToHtml()
       .exec();
