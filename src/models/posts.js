@@ -4,27 +4,6 @@ import mongoose from 'mongoose';
 import marked from 'marked';
 import Comment from './comments'
 
-// 给 post 添加留言数 commentsCount
-// Post.plugin('addCommentsCount', {
-//   afterFind: function (posts) {
-//     return Promise.all(posts.map(function (post) {
-//       return CommentModel.getCommentsCount(post._id).then(function (commentsCount) {
-//         post.commentsCount = commentsCount;
-//         return post;
-//       });
-//     }));
-//   },
-//   afterFindOne: function (post) {
-//     if (post) {
-//       return CommentModel.getCommentsCount(post._id).then(function (count) {
-//         post.commentsCount = count;
-//         return post;
-//       });
-//     }
-//     return post;
-//   }
-// });
-
 function addCommentsCount (schema) {
   schema.add({ commentsCount: Number })
 
@@ -124,7 +103,7 @@ Post.statics = {
   delById(postId, author) {
     return this.remove({ author: author, _id: postId })
       .exec()
-      .then(function (res) {
+      .then((res) => {
         // 文章删除后，再删除该文章下的所有留言
         if (res.result.ok && res.result.n > 0) {
           return Comment.delByPostId(postId);

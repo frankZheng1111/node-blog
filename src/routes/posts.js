@@ -70,7 +70,7 @@ router.get('/:postId', (req, res, next) => {
       Comment.getByPostId(postId),// 获取该文章所有留言
       Post.incPv(postId)// pv 加 1
   ])
-    .then(function (result) {
+    .then((result) => {
       let post = result[0];
       let comments = result[1];
       if (!post) {
@@ -127,7 +127,7 @@ router.get('/:postId/remove', checkLogin, (req, res, next) => {
   let author = req.session.user._id;
 
   Post.delById(postId, author)
-    .then(function () {
+    .then(() => {
       req.flash('success', '删除文章成功');
       // 删除成功后跳转到主页
       res.redirect('/posts');
@@ -136,7 +136,7 @@ router.get('/:postId/remove', checkLogin, (req, res, next) => {
 });
 
 // POST /posts/:postId/comment 创建一条留言
-router.post('/:postId/comment', checkLogin, function(req, res, next) {
+router.post('/:postId/comment', checkLogin, (req, res, next) => {
   var author = req.session.user._id;
   var postId = req.params.postId;
   var content = req.fields.content;
@@ -147,7 +147,7 @@ router.post('/:postId/comment', checkLogin, function(req, res, next) {
   };
 
   Comment.createNewComment(comment)
-    .then(function () {
+    .then(() => {
       req.flash('success', '留言成功');
       // 留言成功后跳转到上一页
       res.redirect('back');
@@ -156,12 +156,12 @@ router.post('/:postId/comment', checkLogin, function(req, res, next) {
 });
 
 // GET /posts/:postId/comment/:commentId/remove 删除一条留言
-router.get('/:postId/comment/:commentId/remove', checkLogin, function(req, res, next) {
+router.get('/:postId/comment/:commentId/remove', checkLogin, (req, res, next) => {
   var commentId = req.params.commentId;
   var author = req.session.user._id;
 
   Comment.delById(commentId, author)
-    .then(function () {
+    .then(() => {
       req.flash('success', '删除留言成功');
       // 删除成功后跳转到上一页
       res.redirect('back');
