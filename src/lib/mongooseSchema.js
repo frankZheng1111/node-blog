@@ -72,7 +72,7 @@ commentSchema.index({ author: 1, _id: 1 });// 通过用户 id 和留言 id 删�
 function strfCreatedAt (schema) {
   schema.add({ strfCreatedAt: String })
   schema.post('findOne', (item) => {
-    item.strfCreatedAt = moment(item.createdAt).format('YYYY-MM-DD HH:mm');
+    if (item) { item.strfCreatedAt = moment(item.createdAt).format('YYYY-MM-DD HH:mm');}
     return item;
   });
   schema.post('find', (items) => {

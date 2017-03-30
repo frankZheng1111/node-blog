@@ -29,6 +29,7 @@ function addCommentsCount (schema) {
   schema.add({ commentsCount: Number })
 
   schema.post('find', (posts, done) => {
+    if (!posts.length) { done(); return posts; }
     return posts.map((post) => {
       return Promise.all(posts.map((post) => {
         return Comment.countByPostId(post._id).then((commentsCount) => {
@@ -48,6 +49,7 @@ function addCommentsCount (schema) {
         return post;
       });
     }
+    done();
     return post;
   });
 }
@@ -82,8 +84,6 @@ Post.statics = {
     return this
       .findOne({ _id: postId })
       .populate({ path: 'author', model: 'User' })
-      // .addCommentsCount()
-      // .contentToHtml()
       .exec();
   },
 
@@ -97,8 +97,6 @@ Post.statics = {
       .find(query)
       .populate({ path: 'author', model: 'User' })
       .sort({ _id: -1 })
-      // .addCommentsCount()
-      // .contentToHtml()
       .exec();
   },
 
