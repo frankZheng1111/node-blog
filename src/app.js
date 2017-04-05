@@ -14,7 +14,7 @@ let MongoStore = _connectMongo(session)
 let app = express();
 
 // 设置模板目录
-app.set('views', path.join(__dirname, '../views'));
+app.set('views', path.join(__dirname, 'views'));
 // 设置模板引擎为 ejs
 app.set('view engine', 'ejs');
 
